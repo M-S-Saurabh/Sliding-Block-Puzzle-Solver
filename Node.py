@@ -67,8 +67,9 @@ class Node:
         for index, tile in enumerate(self.state):
             goal_index = self.goal_state.index(tile)
             row_diff = abs(goal_index//3 - index//3)
-            col_diff = abs(goal_index - index) % 3
+            col_diff = abs(goal_index % 3 - index % 3)
             manhattan += (row_diff + col_diff)
+        # print("manhattan from:{} to:{} is {}".format(self.get_string(), "".join(map(str, self.goal_state)), manhattan))
         return manhattan
 
     def num_wrong_tiles(self):
@@ -77,6 +78,18 @@ class Node:
             if goal_tile != tile: wrong_tiles += 1
         return wrong_tiles
 
+    def path_to_goal(self):
+        states = []
+        actions = []
+        goal = self
+        while goal.parent is not None:
+            states.append(goal.get_string())
+            actions.append(goal.parent_action.value)
+            goal = goal.parent
+        states.reverse()
+        actions.reverse()
+        return states, actions
+
     def visualize(self, details=False, message=None):
         if message is not None:
             print('---',message,'---')
@@ -84,7 +97,7 @@ class Node:
             print("--------------")
         size = 0
         while size < len(self.state):
-            print(self.state[size : size+self.__grid_size])
+            print("   ", self.state[size : size+self.__grid_size])
             size += self.__grid_size
         if details:
             print("path_cost: ", self.path_cost)
